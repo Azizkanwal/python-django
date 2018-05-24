@@ -205,7 +205,7 @@ def deleteSpecificUser(request):
                 userData = None
             if userData:
                 userData.delete()
-            response = HttpResponse(json.dumps({'success': 'Added successfully'}),content_type='application/json')
+            response = HttpResponse(json.dumps({'success': 'Deleted successfully'}),content_type='application/json')
             response.status_code = 200
             return response
         else:
