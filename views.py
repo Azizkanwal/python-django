@@ -94,6 +94,28 @@ def userPrivacySetting(request):
         redirect('/')
 """end function userPrivacySetting"""
 
+
+"""
+Method:             __addPrivacy
+Developer:          Aziz
+Created Date:       06-03-2018
+Purpose:            Add data to Privacy
+Params:             []
+Return:             []
+"""
+def __addPrivacy(userId,eventType, privacyType):
+    try:
+        userprivacy = UserPrivacy()
+        userprivacy.privacyon_id = eventType
+        userprivacy.privacytype_id = privacyType
+        userprivacy.user_id = userId
+        userprivacy.save()
+        response = True
+    except DatabaseError:
+        response = []
+    return response
+"""end function __addPrivacy"""
+
 """
 Method:             addUserPrivacy
 Developer:          Aziz
@@ -102,7 +124,6 @@ Purpose:            Add user Privacy
 Params:             []
 Return:             []
 """
-
 @login_required
 def addUserPrivacy(request):
     if request.user.is_authenticated():
@@ -113,52 +134,17 @@ def addUserPrivacy(request):
                 userPrivacyData = UserPrivacy.objects.all().filter(user_id = currentUser.id)
             except UserPrivacy.DoesNotExist:
                 userPrivacyData = None
-        
-            if userPrivacyData is not None:
-                userPrivacyData.delete()
-                privacyContent = None
-            else:
-                privacyContent = None
 
-            if not privacyContent :
-              
-                userprivacy1 = UserPrivacy()
-                userprivacy1.privacyon_id = request.POST['privacy_event_type_1']
-                userprivacy1.privacytype_id = request.POST['privacy_type_id_1']
-                userprivacy1.user_id = currentUser.id
-                userprivacy1.save()
-
-                userprivacy2 = UserPrivacy()
-                userprivacy2.privacyon_id = request.POST['privacy_event_type_2']
-                userprivacy2.privacytype_id = request.POST['privacy_type_id_2']
-                userprivacy2.user_id = currentUser.id
-                userprivacy2.save()
-
-                userprivacy3 = UserPrivacy()
-                userprivacy3.privacyon_id = request.POST['privacy_event_type_3']
-                userprivacy3.privacytype_id = request.POST['privacy_type_id_3']
-                userprivacy3.user_id = currentUser.id
-                userprivacy3.save()
-
-                userprivacy4 = UserPrivacy()
-                userprivacy4.privacyon_id = request.POST['privacy_event_type_4']
-                userprivacy4.privacytype_id = request.POST['privacy_type_id_4']
-                userprivacy4.user_id = currentUser.id
-                userprivacy4.save()
-
-                userprivacy5 = UserPrivacy()
-                userprivacy5.privacyon_id = request.POST['privacy_event_type_5']
-                userprivacy5.privacytype_id = request.POST['privacy_type_id_5']
-                userprivacy5.user_id = currentUser.id
-                userprivacy5.save()
-
-                userprivacy6 = UserPrivacy()
-                userprivacy6.privacyon_id = request.POST['privacy_event_type_6']
-                userprivacy6.privacytype_id = request.POST['privacy_type_id_6']
-                userprivacy6.user_id = currentUser.id
-                userprivacy6.save()
-
-            messages.success(request, 'Information has been saved successfully')
+            if not userPrivacyData:
+                isSaveStatus = __addPrivacy(currentUser.id, request.POST['privacy_event_type_1'], request.POST['privacy_type_id_1'])
+                if isSaveStatus:
+                   isSaved = __addPrivacy(currentUser.id, request.POST['privacy_event_type_2'], request.POST['privacy_type_id_2'])
+                    if isSaved:
+                        messages.success(request, 'Information has been saved successfully')            
+                    else:
+                        messages.warning(request, 'Information is not saved, Please try again')    
+                else:
+                    messages.warning(request, 'Information is not saved, Please try again')            
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             messages.warning(request, 'Please try again')
